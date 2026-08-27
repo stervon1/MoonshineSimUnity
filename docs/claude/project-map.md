@@ -1,5 +1,5 @@
-<!-- generated: 2026-08-27T18:44:19Z by regen-claude-map.ps1 on WINDOWS -->
-<!-- newest-source: 2026-08-27T18:44:15Z  (mtime of the newest file listed below) -->
+<!-- generated: 2026-08-27T18:55:29Z by regen-claude-map.ps1 on WINDOWS -->
+<!-- newest-source: 2026-08-27T18:55:28Z  (mtime of the newest file listed below) -->
 # Project map - White Lightning
 
 Auto-generated structural snapshot of the hand-authored project. **Do not hand-edit** -
@@ -8,11 +8,12 @@ menu *Tools > White Lightning > Regenerate Claude Map*. Third-party art packages
 `Assets/` are omitted on purpose.
 
 ## Root
-- `CLAUDE.md`  (71 lines)
+- `CLAUDE.md`  (76 lines)
 - `README.md`  (75 lines)
-- `Packages/manifest.json`  (15 lines)
+- `Packages/manifest.json`  (14 lines)
 - `ProjectSettings/ProjectVersion.txt`  (2 lines)
-- `ignore.conf`
+- `.gitignore`
+- `.gitattributes`
 - `.claude/settings.json`  (26 lines)
 
 ## Assets/Scripts  (30 files)
@@ -94,14 +95,14 @@ menu *Tools > White Lightning > Regenerate Claude Map*. Third-party art packages
 - `Assets/Settings/URP-UniversalRenderer.asset`  (55 lines)
 
 ## docs  (11 files)
-- `docs/claude/memory/cross-machine-continuity.md`  (29 lines)
+- `docs/claude/memory/cross-machine-continuity.md`  (36 lines)
 - `docs/claude/memory/design-spine-v3-self-directed.md`  (23 lines)
 - `docs/claude/memory/keep-project-plan-updated.md`  (18 lines)
 - `docs/claude/memory/MEMORY.md`  (5 lines)
 - `docs/claude/memory/moonshinesim-editor-tooling.md`  (26 lines)
 - `docs/claude/project-map.md`  (99 lines)
-- `docs/claude/README.md`  (48 lines)
-- `docs/claude/SESSION.md`  (40 lines)
+- `docs/claude/README.md`  (52 lines)
+- `docs/claude/SESSION.md`  (43 lines)
 - `docs/design-doc.md`  (125 lines)
 - `docs/distillation-reference.md`  (305 lines)
 - `docs/project-plan.md`  (252 lines)

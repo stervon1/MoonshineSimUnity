@@ -48,10 +48,13 @@ unblocked. Still open: **liquid-stream VFX** reacting to cut phase/quality,
 **steam VFX**, a real **proof gauge** widget, **sound cues** for clean vs
 early/late cuts. Model to build against: `docs/distillation-reference.md` §9.
 
-## Cross-machine continuity (Unity Version Control)
-This workspace syncs between machines (Windows ⇄ Mac) via Unity Version Control.
-Claude Code's `~/.claude/` memory does **not** sync, so resume state lives in
-`docs/claude/` and rides along with the workspace. See `docs/claude/README.md`.
+## Cross-machine continuity (git + Git LFS)
+This repo syncs between machines (Windows ⇄ Mac) via git — remote
+`github.com/stervon1/MoonshineSimUnity`, branch `main`. Binary assets (fbx, png,
+wav, …) are stored in **Git LFS** per `.gitattributes`; run `git lfs install`
+once per machine. Claude Code's `~/.claude/` memory does **not** sync, so resume
+state lives in `docs/claude/` and rides along in commits. See
+`docs/claude/README.md`.
 
 - **At session start:** read `docs/claude/SESSION.md` (the handoff) and
   `docs/claude/project-map.md` (generated structural snapshot). If your local
@@ -66,7 +69,9 @@ Claude Code's `~/.claude/` memory does **not** sync, so resume state lives in
   `docs/claude/SESSION.md` — bump the `Last updated` / `Machine` header, rewrite
   *In progress* and *Next steps*, prepend one *Rolling log* bullet. Regenerate the
   map if structure changed. Mirror any new/changed local memory files into
-  `docs/claude/memory/`. Then check the whole `docs/claude/` folder in via UVCS.
+  `docs/claude/memory/`. Then commit `docs/claude/` (and any real work) and
+  `git push` so the next machine gets it; on the other machine start with
+  `git pull`.
 
 ## Commands
 - Open project: Unity Hub → Add → this folder. Editor version is whatever

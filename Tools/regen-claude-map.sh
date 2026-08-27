@@ -10,7 +10,7 @@ root="$(cd "$script_dir/.." && pwd)"
 out="$root/docs/claude/project-map.md"
 
 include_dirs=(Assets/Scripts Assets/Editor Assets/Scenes Assets/Prefabs Assets/Resources Assets/Settings docs)
-root_files=(CLAUDE.md README.md Packages/manifest.json ProjectSettings/ProjectVersion.txt ignore.conf .claude/settings.json)
+root_files=(CLAUDE.md README.md Packages/manifest.json ProjectSettings/ProjectVersion.txt .gitignore .gitattributes .claude/settings.json)
 text_re='\.(cs|md|json|asmdef|txt|uxml|uss|shader|hlsl|asset)$'
 
 newest_epoch=0

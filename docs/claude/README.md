@@ -1,9 +1,10 @@
 # `docs/claude/` — cross-machine continuity for Claude Code
 
-The project moves between machines (Windows ⇄ Mac) through **Unity Version
-Control**. Claude Code's own memory lives in `~/.claude/` and does **not** sync,
-so anything a session needs to resume work on another machine is kept here
-instead, inside the workspace, where UVCS carries it.
+The project moves between machines (Windows ⇄ Mac) through **git** (remote
+`github.com/stervon1/MoonshineSimUnity`, branch `main`; binaries in Git LFS).
+Claude Code's own memory lives in `~/.claude/` and does **not** sync, so anything
+a session needs to resume work on another machine is kept here instead, inside
+the repo, where commits carry it.
 
 ## Files
 
@@ -40,26 +41,29 @@ If `newest-source` is behind the real newest file under `Assets/Scripts` or
 The rules Claude follows are in the root `CLAUDE.md` under **Cross-machine
 continuity**. In short: read `SESSION.md` + `project-map.md` at start; reconcile
 `memory/` with local memory; update `SESSION.md` (and the map, if structure
-changed) before handing back; check the whole `docs/claude/` folder in via UVCS
-so the next machine gets it.
+changed) before handing back; then `git commit` + `git push` so the next machine
+gets it (`git pull` first thing on the other side).
 
 `.claude/settings.json` adds two hooks so the reminder fires on every session
 switch automatically:
 
 - **SessionStart** — surfaces the resume-point reminder and injects the protocol
   into context.
-- **SessionEnd** — reminds to update `SESSION.md` and check in `docs/claude/`.
+- **SessionEnd** — reminds to update `SESSION.md`, commit, and push.
 
 Both are plain `echo` of static JSON, identical under PowerShell and bash. After
-syncing to a new machine, open `/hooks` once (or restart) so Claude Code picks
-up `.claude/settings.json` and prompts you to trust it. `.claude/` must be added
-to Unity Version Control for the hooks to travel.
+cloning to a new machine, open `/hooks` once (or restart) so Claude Code picks up
+`.claude/settings.json` and prompts you to trust it. `.claude/settings.json` is
+committed, so the hooks travel with the repo.
 
 ## First run on a new machine
 
-1. Check out / sync the workspace.
-2. Open `docs/claude/SESSION.md` — that's the state to resume from.
-3. If `~/.claude/projects/<slug>/memory/MEMORY.md` is missing or thinner than
+1. `git lfs install` (once), then `git clone https://github.com/stervon1/MoonshineSimUnity.git`.
+2. `git config core.autocrlf false` in the clone (Unity + cross-platform line endings).
+3. Unity Hub → *Add project from disk* → the clone. Hub offers to install the
+   editor version from `ProjectSettings/ProjectVersion.txt` (currently 6000.5.10f1).
+4. Open `docs/claude/SESSION.md` — that's the state to resume from.
+5. If `~/.claude/projects/<slug>/memory/MEMORY.md` is missing or thinner than
    `docs/claude/memory/MEMORY.md`, copy the missing files across (the `<slug>`
    is derived from the project's path on that machine).
-4. `bash Tools/regen-claude-map.sh` to confirm the map matches local files.
+6. `bash Tools/regen-claude-map.sh` to confirm the map matches local files.

@@ -21,7 +21,7 @@ $includeDirs = @(
     'Assets/Settings',
     'docs'
 )
-$rootFiles = @('CLAUDE.md','README.md','Packages/manifest.json','ProjectSettings/ProjectVersion.txt','ignore.conf','.claude/settings.json')
+$rootFiles = @('CLAUDE.md','README.md','Packages/manifest.json','ProjectSettings/ProjectVersion.txt','.gitignore','.gitattributes','.claude/settings.json')
 $textExt   = @('.cs','.md','.json','.asmdef','.txt','.uxml','.uss','.shader','.hlsl','.asset')
 
 function LineCount([string]$path) {
