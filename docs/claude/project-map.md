@@ -1,5 +1,5 @@
-<!-- generated: 2026-08-27T18:55:29Z by regen-claude-map.ps1 on WINDOWS -->
-<!-- newest-source: 2026-08-27T18:55:28Z  (mtime of the newest file listed below) -->
+<!-- generated: 2026-08-27T18:59:16Z by regen-claude-map.ps1 on WINDOWS -->
+<!-- newest-source: 2026-08-27T18:59:11Z  (mtime of the newest file listed below) -->
 # Project map - White Lightning
 
 Auto-generated structural snapshot of the hand-authored project. **Do not hand-edit** -
@@ -100,9 +100,9 @@ menu *Tools > White Lightning > Regenerate Claude Map*. Third-party art packages
 - `docs/claude/memory/keep-project-plan-updated.md`  (18 lines)
 - `docs/claude/memory/MEMORY.md`  (5 lines)
 - `docs/claude/memory/moonshinesim-editor-tooling.md`  (26 lines)
-- `docs/claude/project-map.md`  (99 lines)
+- `docs/claude/project-map.md`  (100 lines)
 - `docs/claude/README.md`  (52 lines)
-- `docs/claude/SESSION.md`  (43 lines)
+- `docs/claude/SESSION.md`  (45 lines)
 - `docs/design-doc.md`  (125 lines)
 - `docs/distillation-reference.md`  (305 lines)
 - `docs/project-plan.md`  (252 lines)

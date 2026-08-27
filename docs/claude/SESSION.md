@@ -30,14 +30,16 @@ widget, and sound cues for clean vs early/late cuts. Tune against
 
 ## Open questions / decisions pending
 
-- **First push not done yet (2026-08-27):** the initial commit was rebuilt with
-  Git LFS (1489 binaries pointerized, `core.autocrlf=false`, `ignore.conf` +
-  `.plastic/` dropped) but has **not been pushed**. Pushing ~1.9 GB of LFS
-  objects will blow GitHub's free LFS tier (1 GB storage + 1 GB/mo bandwidth) —
-  buy a GitHub LFS data pack first, or repoint `origin` at GitLab (10 GB free).
-  Command: `git push -u origin main`. Optional local cleanup to drop the orphaned
-  pre-LFS blobs (~2 GB, frees disk, removes the migration undo path):
-  `git reflog expire --expire=now --all && git gc --prune=now`.
+- **Push blocked pending GitHub repo recreation (2026-08-27):** local `main` was
+  rebuilt with Git LFS (1492 binaries pointerized, `core.autocrlf=false`,
+  `ignore.conf` + `.plastic/` dropped) — commits `e35fa27` → `261b93a`. Remote
+  `main` still points at the pre-LFS commit `4e3efde` (already pushed), so the
+  histories have diverged with no common ancestor. **Plan (user's call):** delete
+  `github.com/stervon1/MoonshineSimUnity`, recreate it empty + private, same name,
+  then `git push -u origin main` (origin URL unchanged, no force needed). Buy a
+  GitHub LFS data pack first — 1.9 GB LFS exceeds the free 1 GB tier. After a
+  successful push, optional local cleanup: `git reflog expire --expire=now --all
+  && git gc --prune=now` (frees ~2 GB, drops the migration undo path).
 - The old Plastic/UVCS setup is abandoned. `.plastic/` still sits on disk
   (gitignored) — safe to delete once the git push is confirmed working.
 
