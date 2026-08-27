@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\":\"[continuity] Resume point: read docs/claude/SESSION.md . Reconcile docs/claude/memory/ with local memory. Regenerate docs/claude/project-map.md if it looks stale.\",\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Cross-machine continuity: this project syncs between machines via Unity Version Control and ~/.claude memory does not. Before starting work, read docs/claude/SESSION.md (the handoff), skim docs/claude/project-map.md, and reconcile docs/claude/memory/ with local memory. Full protocol in CLAUDE.md > Cross-machine continuity.\"}}'",
+            "statusMessage": "Loading session handoff..."
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\":\"[continuity] Switching machines? Update docs/claude/SESSION.md (In progress / Next steps / log line), regenerate docs/claude/project-map.md if structure changed, mirror new memory into docs/claude/memory/, then check in docs/claude/ via Unity Version Control.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
