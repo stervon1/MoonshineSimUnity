@@ -56,7 +56,7 @@ produces a `StandaloneWindows64` player. Args: `-buildTarget`, `-outputPath`,
 | Godot | Unreal | Unity | Notes |
 |---|---|---|---|
 | `game_state.gd` (autoload) | `UMoonshineGameState` (subsystem) | `GameState` (singleton MonoBehaviour) | `GameState.Instance` from anywhere |
-| `job_generator.gd` | `UJobGenerator` / `FJobSpec` | `JobGenerator` / `JobSpec` | Static generator, same tuning |
+| `job_generator.gd` | `UJobGenerator` / `FJobSpec` | `BatchPlanGenerator` / `BatchPlan` | Static generator, same tuning; renamed job→batch in the v3 spine (M2) |
 | `still_run.gd` | `UStillRunComponent` | `StillRunController` | MonoBehaviour on the still GameObject |
 | `proofing.gd` | `UProofingLibrary` | `ProofingUtility` | Static math, no MonoBehaviour |
 
@@ -68,11 +68,12 @@ stays plain C#, decoupled from any UI framework.
 ```
 Assets/
   Scripts/
-    Core/       GameState singleton, JobSpec + JobGenerator
-    Gameplay/   StillRunController (centerpiece), ProofingUtility,
+    Core/       GameState singleton, BatchPlan + BatchPlanGenerator, Buyer +
+                BuyerGenerator, BatchAppraisal
+    Gameplay/   StillRunController (centerpiece), BatchController, ProofingUtility,
                 FirstPersonController, Interactable, PlayerInteractor
-    UI/         Prototype uGUI wiring (JobBoard/StillRun), ClipboardModel +
-                ClipboardController
+    UI/         ClipboardModel + ClipboardController — the only screen UI;
+                everything else is a world interaction
   Editor/       Tools > White Lightning generators + BuildScript (headless build)
   Scenes/       Prototype.unity (+ generated greybox materials _*.mat)
   Settings/     URP pipeline + renderer assets
@@ -86,9 +87,11 @@ Studio, SimpleNaturePack, Toon Gas Station.
 
 ## Status
 
-Playable prototype vertical-slice-in-progress. The still-run loop runs
-(start run → cuts → result); Milestone 1 focuses on the *feel* of the cut
-moment — liquid-stream VFX, steam, sound, a tuned proof curve. Milestone 2
-builds the make→sell→cash loop (batch plan → buyer appraisal). The design
-spine is **v3: self-directed batches + back-door buyers** — see
-`docs/design-doc.md`. Live checklist in `docs/project-plan.md`.
+Playable prototype, Milestones 1 + 2 done end-to-end: plan a batch → mash →
+ferment → run the still (cuts) → proof → sell to a back-door buyer → cash +
+rapport. Milestone 1 polish is still open — real VFX Graph liquid-stream/steam
+(placeholder particle systems drive today), sound cue clips, a playtested cut
+moment. Milestone 3 (several buyers, rapport, upgrade effects, tactile
+transfers) is next. The design spine is **v3: self-directed batches +
+back-door buyers** — see `docs/design-doc.md`. Live checklist in
+`docs/project-plan.md`.

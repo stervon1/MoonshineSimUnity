@@ -93,7 +93,7 @@ workflow. Each milestone should be playable/testable before moving on.
       **pressure**; a "Vent the boiler" block bleeds it; redlining during the
       hearts costs quality (no hard fail). Smooth Perlin sway, not jitter.
 - [~] **Sound cues** — `StillAudio` hooks: run-start / cut (pitch by quality) /
-      finish / boil loop. Clip slots empty — needs audio assets.
+      finish / boil loop / cooling-water cue. Clip slots empty — needs audio assets.
 - [x] **Real `AnimationCurve` for `proofCurve`** — code-authored in
       `StillInteractionRigSetup` (90 s run); tune on the `Still` Inspector.
 - [ ] **Playtest: does the cut moment feel satisfying?** — waits on real VFX
@@ -232,10 +232,14 @@ hold-E or press. Missing them nudges quality down, never blocks.
 |---|---|---|
 | Mash | **Stir every ~10 min**; hold the rest temp near 148 °F / 64 °C | `[CH]` §2 |
 | Ferment | Check airlock bubble rate; take a **hydrometer / gravity reading**; skim krausen; add nutrient | `[HD]` §2 |
-| Spirit run | **Manage heat** — keep take-off ≲ 25–30 ml/min or you pull tails early; adjust cooling water; **vent** (tier 1, built); collect into numbered jars | `[HDF]` §3a, §4 |
+| Spirit run | **Manage heat** — keep take-off ≲ 25–30 ml/min or you pull tails early; **adjust cooling water** (built — `StillRunController.AdjustCoolingWater`, cue every 12 s, untended = quality penalty on hearts samples, mirrors the pressure-redline pattern); **vent** (tier 1, built); collect into numbered jars | `[HDF]` §3a, §4 |
 | Cuts | **Air the jars** ~24 h, then **dilute-to-35–40 %** before nosing/blending | `[HD]` §4 |
 | Proofing | Add water **slowly**, rest, **re-measure at 20 °C** (exothermic + volume contraction) | §5 |
 | Aging (M4) | Rouse / rotate barrels; top up for the angels' share | §6 |
+
+Still open: mash-stir and ferment tending tasks, and the tactile-transfer
+loop itself (§1 above) — needs new carryable vessels/prefabs and scene
+wiring, deferred pending a session with Unity Editor access to verify.
 
 Scoring hook: each tended task feeds the run's `heartsQuality` / `smoothness`
 (reference §9.3), so a careful operator out-earns a button-masher.
@@ -290,8 +294,15 @@ Scoring hook: each tended task feeds the run's `heartsQuality` / `smoothness`
 
 ### Next session — start here
 1. Save the outdoor scene as its own file (or decide `Prototype.unity` stays outdoor).
+   **Blocked without Unity Editor access** — scenes are editor-tool-generated,
+   not hand-authored; needs a session that can run `Tools > White Lightning`.
 2. Tactile-transfer loop — `Carryable` gains `capacity`/`fillLevel`/`contents`;
    hold-E fill at bins/tap, hold-E pour at mash/fermenter/proofing (backlog §1).
-3. Intermittent tasks — start with the still run (stir/heat/vent) since that
-   controller already exists (backlog §2).
+   Needs new carryable vessel prefabs + scene wiring — do this with Editor
+   access so it can be verified in Play mode before landing.
+3. ~~Intermittent tasks — start with the still run~~ **Cooling-water task done**
+   (2026-08-28, no-Editor session): `StillRunController.AdjustCoolingWater`,
+   `StillTaskCue` pulsing light, `StillAudio.coolingCueClip` hook, fifth white
+   block wired in `StillInteractionRigSetup`. Mash-stir + ferment tending still
+   open (backlog §2).
 4. Then M3 buyers/rapport/economy-effects, then the art reskin.

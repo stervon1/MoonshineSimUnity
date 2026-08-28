@@ -61,6 +61,9 @@ namespace MoonshineSim.EditorTools
                 still.CallCutToTails);
             MakeBlock(controlsRoot, white, basePos + new Vector3(0.9f, 0f, 0f), "Vent the boiler",
                 still.Vent);
+            var coolingBlock = MakeBlock(controlsRoot, white, basePos + new Vector3(1.5f, 0f, 0f), "Adjust cooling water",
+                still.AdjustCoolingWater);
+            AddCoolingCueLight(coolingBlock, still);
 
             // --- HUD --------------------------------------------------
             var hudGO = new GameObject("InteractionHUD", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -134,7 +137,7 @@ namespace MoonshineSim.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static void MakeBlock(GameObject parent, Material mat, Vector3 pos, string verb, UnityEngine.Events.UnityAction action)
+        private static GameObject MakeBlock(GameObject parent, Material mat, Vector3 pos, string verb, UnityEngine.Events.UnityAction action)
         {
             var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
             block.name = verb;
@@ -149,6 +152,28 @@ namespace MoonshineSim.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
 
             UnityEventTools.AddPersistentListener(interactable.onActivate, action);
+            return block;
+        }
+
+        /// <summary>Small point light on the cooling-water block that pulses via
+        /// <see cref="StillTaskCue"/> while the intermittent task needs tending.</summary>
+        private static void AddCoolingCueLight(GameObject coolingBlock, StillRunController still)
+        {
+            var lightGO = new GameObject("CoolingCueLight");
+            lightGO.transform.SetParent(coolingBlock.transform, false);
+            lightGO.transform.localPosition = Vector3.up * 1.2f;
+
+            var light = lightGO.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = new Color(1f, 0.35f, 0.25f);
+            light.range = 1.5f;
+            light.intensity = 0f;
+            light.shadows = LightShadows.None;
+
+            var cue = lightGO.AddComponent<StillTaskCue>();
+            var cueSo = new SerializedObject(cue);
+            cueSo.FindProperty("stillRun").objectReferenceValue = still;
+            cueSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static Material LoadOrCreateWhite()
