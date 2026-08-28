@@ -52,7 +52,9 @@ line_of() {  # "- `path`  (N lines)" or "- `path`"
     for dir in "${include_dirs[@]}"; do
         abs_dir="$root/$dir"
         [ -d "$abs_dir" ] || continue
-        mapfile -t files < <(find "$abs_dir" -type f ! -name '*.meta' | sort)
+        files=()
+        while IFS= read -r f; do files+=("$f"); done \
+            < <(find "$abs_dir" -type f ! -name '*.meta' | sort)
         [ "${#files[@]}" -gt 0 ] || continue
         echo "## $dir  (${#files[@]} files)"
         for abs in "${files[@]}"; do

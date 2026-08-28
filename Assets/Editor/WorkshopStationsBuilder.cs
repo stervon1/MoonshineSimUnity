@@ -54,6 +54,21 @@ namespace MoonshineSim.EditorTools
             jar.AddComponent<Rigidbody>().isKinematic = true;
             jar.AddComponent<Carryable>();
 
+            // --- Bucket (carry grain from a bin to the mash tub) ----
+            var bucket = MakePrimitive(PrimitiveType.Cube, root.transform, "Bucket",
+                o + new Vector3(-3.8f, 0.55f, -4.0f), new Vector3(0.34f, 0.4f, 0.34f),
+                Mat("_StnBucket", new Color(0.32f, 0.34f, 0.38f)));
+            bucket.AddComponent<Rigidbody>().isKinematic = true;
+            var bucketCar = bucket.AddComponent<Carryable>();
+            var bucketFill = MakePrimitive(PrimitiveType.Cube, bucket.transform, "Fill",
+                bucket.transform.position, Vector3.one, Mat("_StnBucketFill", new Color(0.82f, 0.68f, 0.34f)));
+            Object.DestroyImmediate(bucketFill.GetComponent<Collider>());
+            bucketFill.transform.localPosition = Vector3.zero;
+            bucketFill.transform.localScale = new Vector3(0.8f, 1f, 0.8f);
+            WireString(bucketCar, "kind", "bucket");
+            WireFloat(bucketCar, "capacity", 1f);
+            Wire(bucketCar, "fillVisual", bucketFill.transform);
+
             // --- Grain bins (6) -------------------------------------
             var grains = new[]
             {
@@ -64,22 +79,23 @@ namespace MoonshineSim.EditorTools
                 (SpiritStyle.SugarShine,   new Color(0.93f, 0.93f, 0.90f)),
                 (SpiritStyle.Molasses,     new Color(0.32f, 0.22f, 0.16f)),
             };
-            GameObject firstBin = null;
             for (int i = 0; i < grains.Length; i++)
             {
-                var bin = AddGrainBin(root, batch, grains[i].Item1, grains[i].Item2,
+                AddGrainBin(root, grains[i].Item1, grains[i].Item2,
                     o + new Vector3(-3.8f, 0.4f, -2.5f + i));
-                if (i == 0) firstBin = bin;
             }
 
             // --- Mash tub + fermenter (greybox) --------------
             var mash = MakePrimitive(PrimitiveType.Cylinder, root.transform, "MashTub",
                 o + new Vector3(-2f, 0.5f, 2f), new Vector3(0.9f, 0.5f, 0.9f),
                 Mat("_StnMash", new Color(0.5f, 0.42f, 0.3f)));
+            var mashPour = mash.AddComponent<PourTarget>();
+            WireEnum(mashPour, "accept", (int)VesselContents.Grain);
+            WireFloat(mashPour, "unitsPerSecond", 0.8f);
             Wire(mash.AddComponent<MashStation>(), "batch", batch);
             Sign(root.transform, "Mash Tub", mash.transform.position + Vector3.up * 1.1f);
             InfoCard(root.transform, mash, "Mash Tub",
-                "Mashing cooks the grain in hot water (~148 F / 64 C) so enzymes turn its starch into fermentable sugar. What you draw off is the sweet wash-to-be.");
+                "Hold E with a bucket of grain to pour it in — the first pour picks the spirit, the amount sets the batch size (capped by your rig). Mashing then cooks the grain in hot water (~148 F / 64 C) so its starch turns to fermentable sugar.");
 
             var ferm = MakePrimitive(PrimitiveType.Cylinder, root.transform, "Fermenter",
                 o + new Vector3(-2f, 0.55f, 3.6f), new Vector3(0.85f, 0.6f, 0.85f),
@@ -150,7 +166,7 @@ namespace MoonshineSim.EditorTools
             var arrowT = BuildArrow(markerGO.transform);
             Wire(marker, "batch", batch);
             Wire(marker, "arrow", arrowT);
-            Wire(marker, "grainTarget", firstBin != null ? firstBin.transform : mash.transform);
+            Wire(marker, "grainTarget", bucket != null ? bucket.transform : mash.transform);
             Wire(marker, "mashTarget", mash.transform);
             Wire(marker, "fermentTarget", ferm.transform);
             Wire(marker, "stillTarget", still.transform);
@@ -187,18 +203,23 @@ namespace MoonshineSim.EditorTools
 
         // --- station helpers -----------------------------------------
 
-        private static GameObject AddGrainBin(GameObject root, BatchController batch,
+        private static GameObject AddGrainBin(GameObject root,
             SpiritStyle style, Color color, Vector3 pos)
         {
             var go = MakePrimitive(PrimitiveType.Cube, root.transform, $"GrainBin_{style}", pos,
                 new Vector3(0.7f, 0.8f, 0.7f), Mat($"_StnGrain{style}", color));
-            Wire(go.AddComponent<GrainBin>(), "batch", batch);
-            WireEnum(go.GetComponent<GrainBin>(), "style", (int)style);
+
+            var fs = go.AddComponent<FillSource>();
+            WireEnum(fs, "provides", (int)VesselContents.Grain);
+            WireEnum(fs, "grainStyle", (int)style);
+            WireString(fs, "label", GrainWord(style).ToLowerInvariant());
+            WireFloat(fs, "unitsPerSecond", 0.6f);
 
             Sign(root.transform, GrainWord(style), pos + Vector3.up * 1.15f);
             InfoCard(root.transform, go, $"{GrainWord(style)} bin",
-                "Grain sets the spirit's character. Its starch becomes sugar in the mash, then alcohol " +
-                "in the ferment. Corn = sweet whiskey, rye = spicy, malt = clean, wheat = soft, " +
+                "Grab the bucket, then hold E here to scoop grain into it — how much you scoop " +
+                "sets the batch size. Carry it to the mash tub and hold E to pour it in. " +
+                "Corn = sweet whiskey, rye = spicy, malt = clean, wheat = soft, " +
                 "sugar/molasses = light shine or rum. (A market to buy grain comes later.)");
             return go;
         }
@@ -430,6 +451,13 @@ namespace MoonshineSim.EditorTools
         {
             var so = new SerializedObject(target);
             so.FindProperty(field).floatValue = value;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void WireString(Component target, string field, string value)
+        {
+            var so = new SerializedObject(target);
+            so.FindProperty(field).stringValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
     }

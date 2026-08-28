@@ -22,9 +22,11 @@ see `docs/design-doc.md`.)
   `ProofingUtility`.
 - `Assets/Scripts/Gameplay/` — `StillRunController` (centerpiece), `BatchController`
   (batch state machine + buyer roster, bridges GameState), `FirstPersonController`,
-  interaction (`IInteractable` / `PlayerInteractor` / `Interactable` / `Carryable`),
-  world stations (`GrainBin`, `MashStation`, `FermentStation`, `ProofingStation`,
-  `BuyerCounter`), feel (`ProofGauge`, `StillFX`, `StillAudio`).
+  interaction (`IInteractable` / `IHoldInteractable` / `PlayerInteractor` /
+  `Interactable` / `Carryable`), tactile transfers (`FillSource` + `PourTarget`
+  hold-E fill/pour, `Carryable` vessel state), world stations (`MashStation`,
+  `FermentStation`, `ProofingStation`, `BuyerCounter`; grain bins are a
+  `FillSource`), feel (`ProofGauge`, `StillFX`, `StillAudio`).
 - `Assets/Scripts/UI/` — **the clipboard is the only screen UI**: `ClipboardModel`
   (Unity-free) + `ClipboardController`. Everything else is a world interaction.
 - `Assets/Editor/` — `Tools > White Lightning > Rebuild Prototype` runs the whole

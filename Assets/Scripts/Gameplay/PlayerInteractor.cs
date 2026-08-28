@@ -23,15 +23,25 @@ namespace MoonshineSim.Gameplay
 
         public Carryable Carried { get; private set; }
 
+        /// <summary>The one interactor in the scene. Hold targets read the player through this.</summary>
+        public static PlayerInteractor Active { get; private set; }
+
         private IInteractable _focused;
+        private IHoldInteractable _holding;
         private Camera _cam;
 
         private void Awake()
         {
+            Active = this;
             _cam = GetComponent<Camera>();
             if (_cam == null) _cam = GetComponentInParent<Camera>();
             if (_cam == null) _cam = Camera.main;
             SetPrompt(null);
+        }
+
+        private void OnDestroy()
+        {
+            if (Active == this) Active = null;
         }
 
         private Component _focusedComponent;
@@ -70,6 +80,13 @@ namespace MoonshineSim.Gameplay
                 }
             }
 
+            // Hold interactions (fill / pour / water down) consume the button
+            // for as long as it's down; a plain tap falls through below.
+            bool holdDown = (kb != null && kb.eKey.isPressed) ||
+                            (mouse != null && mouse.leftButton.isPressed);
+            UpdateHold(_focused as IHoldInteractable, holdDown);
+            if (_holding != null) return;
+
             bool activate = (kb != null && kb.eKey.wasPressedThisFrame) ||
                             (mouse != null && mouse.leftButton.wasPressedThisFrame);
             if (!activate) return;
@@ -82,6 +99,48 @@ namespace MoonshineSim.Gameplay
             {
                 Drop();
             }
+        }
+
+        // --- hold interactions ---------------------------------------------
+
+        private void UpdateHold(IHoldInteractable target, bool holdDown)
+        {
+            if (_holding != null)
+            {
+                bool stillValid = holdDown &&
+                                  ReferenceEquals(target, _holding) &&
+                                  _holding.CanHold(this);
+                if (!stillValid)
+                {
+                    _holding.HoldEnded(this, cancelled: !holdDown);
+                    _holding = null;
+                }
+            }
+
+            if (_holding == null && target != null && holdDown && target.CanHold(this))
+            {
+                _holding = target;
+            }
+
+            if (_holding != null)
+            {
+                _holding.HoldTick(this, Time.deltaTime);
+                DriveMeter(_holding.HoldProgress01(this));
+            }
+            else
+            {
+                DriveMeter(-1f);
+            }
+        }
+
+        private void DriveMeter(float progress01)
+        {
+            if (reticle is Image img && img.type == Image.Type.Filled)
+            {
+                img.fillAmount = progress01 >= 0f ? Mathf.Clamp01(progress01) : 1f;
+            }
+            // The "(NN%)" text is carried by the hold target's GetPrompt(),
+            // refreshed every frame by SetPrompt() above.
         }
 
         // --- carry -----------------------------------------------------------

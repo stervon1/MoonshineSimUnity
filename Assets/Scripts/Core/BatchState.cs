@@ -25,6 +25,7 @@ namespace MoonshineSim.Core
         public BatchStage stage = BatchStage.None;
         public SpiritStyle style;
 
+        public float batchSizeGallons = 3f; // set by how much grain you pour into the mash tub (rig-capped)
         public float washAbv;        // % ABV after fermentation
         public float heartsVolumeL;  // litres of hearts kept from the still run
         public float heartsQuality;  // 0..1 — cut precision from the still run

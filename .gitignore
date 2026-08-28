@@ -113,6 +113,11 @@ InitTestScene*.unity*
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
+# Auto-generated build/version stamp (BuildVersionStamper regenerates it on
+# every recompile; player builds stamp their own via the preprocess hook).
+/[Aa]ssets/[Rr]esources/BuildInfo.json
+/[Aa]ssets/[Rr]esources/BuildInfo.json.meta
+
 # --- Migrated away from Unity Version Control (Plastic) ---
 /.plastic/
 ignore.conf
