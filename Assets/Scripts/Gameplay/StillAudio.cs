@@ -15,6 +15,7 @@ namespace MoonshineSim.Gameplay
         [SerializeField] private AudioClip cutCue;
         [SerializeField] private AudioClip runFinishCue;
         [SerializeField] private AudioClip boilLoop;
+        [SerializeField] private AudioClip coolingCueClip;
 
         private AudioSource _source;
 
@@ -27,6 +28,7 @@ namespace MoonshineSim.Gameplay
             stillRun.OnRunStarted += HandleStart;
             stillRun.OnCutMade += HandleCut;
             stillRun.OnRunFinished += HandleFinish;
+            stillRun.OnCoolingCueChanged += HandleCoolingCue;
         }
 
         private void OnDisable()
@@ -35,6 +37,7 @@ namespace MoonshineSim.Gameplay
             stillRun.OnRunStarted -= HandleStart;
             stillRun.OnCutMade -= HandleCut;
             stillRun.OnRunFinished -= HandleFinish;
+            stillRun.OnCoolingCueChanged -= HandleCoolingCue;
         }
 
         private void HandleStart()
@@ -60,6 +63,11 @@ namespace MoonshineSim.Gameplay
             if (_source.loop) { _source.Stop(); _source.loop = false; _source.clip = null; }
             _source.pitch = 1f;
             if (runFinishCue != null) _source.PlayOneShot(runFinishCue);
+        }
+
+        private void HandleCoolingCue(bool needsAttention)
+        {
+            if (needsAttention && coolingCueClip != null) _source.PlayOneShot(coolingCueClip);
         }
     }
 }

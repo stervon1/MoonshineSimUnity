@@ -55,12 +55,19 @@ namespace MoonshineSim.Gameplay
         [SerializeField] private float pressureRedlinePsi = 14f;
         [SerializeField] private float ventReliefPsi = 9f;
 
+        [Header("Intermittent task: cooling water")]
+        [Tooltip("Seconds of run time between cooling-water cues.")]
+        [SerializeField] private float coolingCheckIntervalSeconds = 12f;
+        [Tooltip("Quality multiplier applied to hearts samples while the cue is unanswered.")]
+        [SerializeField, Range(0f, 1f)] private float coolingNeglectPenalty = 0.4f;
+
         public event Action OnRunStarted;
         public event Action<string, float> OnCutMade;          // (phaseLabel, qualityAtCut)
         public event Action<StillRunResult> OnRunFinished;
         public event Action<float> OnProofUpdated;             // proof (0..~150)
         public event Action<float> OnTemperatureUpdated;       // deg C
         public event Action<float> OnPressureUpdated;          // psi
+        public event Action<bool> OnCoolingCueChanged;         // needsAttention
 
         public StillCutPhase CurrentPhase { get; private set; } = StillCutPhase.Heads;
         public float CurrentTemperatureC { get; private set; }
@@ -74,6 +81,8 @@ namespace MoonshineSim.Gameplay
         private int _heartsSamples;
         private float _pressure;
         private bool _running;
+        private float _coolingTimer;
+        private bool _coolingNeedsAttention;
 
         public void StartRun()
         {
@@ -83,6 +92,8 @@ namespace MoonshineSim.Gameplay
             _heartsQualitySum = 0f;
             _heartsSamples = 0;
             _pressure = pressureStartPsi;
+            _coolingTimer = 0f;
+            SetCoolingCue(false);
             _running = true;
             OnRunStarted?.Invoke();
         }
@@ -91,6 +102,21 @@ namespace MoonshineSim.Gameplay
         public void Vent()
         {
             _pressure = Mathf.Max(pressureStartPsi, _pressure - ventReliefPsi);
+        }
+
+        /// <summary>Top up the condenser cooling water — the recurring spirit-run
+        /// tending task. Answers the cue if one is active. Safe to call anytime.</summary>
+        public void AdjustCoolingWater()
+        {
+            _coolingTimer = 0f;
+            SetCoolingCue(false);
+        }
+
+        private void SetCoolingCue(bool needsAttention)
+        {
+            if (_coolingNeedsAttention == needsAttention) return;
+            _coolingNeedsAttention = needsAttention;
+            OnCoolingCueChanged?.Invoke(needsAttention);
         }
 
         private void Update()
@@ -119,11 +145,18 @@ namespace MoonshineSim.Gameplay
             CurrentPressurePsi = _pressure + (equipmentTier == 1 ? sway * 20f : 0f);
             OnPressureUpdated?.Invoke(CurrentPressurePsi);
 
+            _coolingTimer += Time.deltaTime;
+            if (!_coolingNeedsAttention && _coolingTimer >= coolingCheckIntervalSeconds)
+            {
+                SetCoolingCue(true);
+            }
+
             if (CurrentPhase == StillCutPhase.Hearts)
             {
                 _heartsVolume += Time.deltaTime;
                 float q = CutQuality(progress);
                 if (_pressure > pressureRedlinePsi) q *= 0.6f;   // running hot
+                if (_coolingNeedsAttention) q *= (1f - coolingNeglectPenalty); // untended cooling water
                 _heartsQualitySum += q;
                 _heartsSamples++;
             }
@@ -182,6 +215,7 @@ namespace MoonshineSim.Gameplay
         {
             _running = false;
             CurrentPhase = StillCutPhase.Done;
+            SetCoolingCue(false);
 
             float averageQuality = _heartsSamples > 0 ? _heartsQualitySum / _heartsSamples : 0f;
 
